@@ -20,6 +20,15 @@ const (
 	rubToEurRate float64 = rubToUsdRate / eurToUsdRate
 )
 
+var rates = map[string]float64{
+	"USD-RUB": usdToRubRate,
+	"USD-EUR": usdToEurRate,
+	"EUR-RUB": eurToRubRate,
+	"EUR-USD": eurToUsdRate,
+	"RUB-USD": rubToUsdRate,
+	"RUB-EUR": rubToEurRate,
+}
+
 func main() {
 	for {
 		firstCurrency, err := getUserFirstCurrency()
@@ -119,20 +128,10 @@ func getUserLastCurrency(currency string) (input string, errInput error) {
 	return input, nil
 }
 
-func calculateRate(number float64, firstCurrency string, secondCurrency string) float64 {
-	switch {
-	case firstCurrency == USD && secondCurrency == RUB:
-		return number * usdToRubRate
-	case firstCurrency == USD && secondCurrency == EUR:
-		return number * usdToEurRate
-	case firstCurrency == EUR && secondCurrency == RUB:
-		return number * eurToRubRate
-	case firstCurrency == EUR && secondCurrency == USD:
-		return number * eurToUsdRate
-	case firstCurrency == RUB && secondCurrency == EUR:
-		return number * rubToEurRate
-	case firstCurrency == RUB && secondCurrency == USD:
-		return number * rubToUsdRate
+func calculateRate(number float64, from, to string) float64 {
+	key := from + "-" + to                  // Ключ для поиска по мапе, мы в мапе сделали ключи как "RUB-USD"
+	if rate, exists := rates[key]; exists { // если exists тру то мы выполняем тело иф
+		return number * rate // выполняется если ключ существует в мапе
 	}
 	return 0
 }
